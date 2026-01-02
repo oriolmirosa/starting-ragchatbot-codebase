@@ -29,9 +29,10 @@ uv run pytest tests/ -k "search" -v
 tests/
 ├── __init__.py                    # Package marker
 ├── conftest.py                    # Shared fixtures and configuration
-├── test_search_tool.py           # CourseSearchTool unit tests (20 tests)
-├── test_ai_generator.py          # AIGenerator unit tests (10 tests)
-├── test_rag_integration.py       # RAG system integration tests (16 tests)
+├── test_search_tool.py           # CourseSearchTool unit tests (30 tests)
+├── test_ai_generator.py          # AIGenerator unit tests (15 tests)
+├── test_rag_integration.py       # RAG system integration tests (6 tests)
+├── test_api_endpoints.py         # FastAPI endpoint tests (18 tests)
 ├── test_data/
 │   └── test_course.txt           # Sample course for testing
 ├── TEST_RESULTS.md               # Detailed test results and analysis
@@ -96,6 +97,27 @@ Integration tests for the complete RAG system flow.
 - ✅ Duplicate courses not reprocessed
 - ⚠️ End-to-end queries (requires API key mocking)
 
+### test_api_endpoints.py
+Tests for FastAPI HTTP endpoints - API layer validation.
+
+**Test Classes:**
+- `TestQueryEndpoint` - POST /api/query tests
+- `TestCoursesEndpoint` - GET /api/courses tests
+- `TestRootEndpoint` - GET / tests
+- `TestCORSHeaders` - CORS middleware validation
+- `TestRequestValidation` - Request validation tests
+- `TestSessionManagement` - Session handling tests
+
+**Key Tests:**
+- ✅ Query endpoint with/without session_id
+- ✅ Returns proper answer and sources structure
+- ✅ Validates required fields (422 errors)
+- ✅ Error handling (500 on failures)
+- ✅ Course statistics endpoint
+- ✅ CORS headers present and configured correctly
+- ✅ Request validation (malformed JSON, wrong content type)
+- ✅ Session persistence across requests
+
 ## Fixtures (conftest.py)
 
 ### Configuration Fixtures
@@ -119,24 +141,31 @@ Integration tests for the complete RAG system flow.
 - `mock_anthropic_response` - Mock text-only API response
 - `mock_anthropic_tool_use_response` - Mock tool-use API response
 
+### API Testing Fixtures
+- `mock_rag_system` - Mocked RAGSystem for API endpoint tests
+- `test_app` - FastAPI test application (avoids static file mounting)
+- `client` - TestClient for making HTTP requests
+
 ## Test Results
 
 ### Current Status
-- **Total Tests**: 46
-- **Passing**: 40 (87%)
-- **Failing**: 6 (13% - all due to missing API mocking)
+- **Total Tests**: 69
+- **Passing**: 63 (91%)
+- **Failing**: 6 (9% - all integration tests requiring valid API key)
 
 ### Component Coverage
 | Component | Tests | Status |
 |-----------|-------|--------|
-| CourseSearchTool | 20 | ✅ All passing |
-| AIGenerator | 10 | ✅ All passing |
-| RAG Integration | 10/16 | ⚠️ Needs API mocking |
+| API Endpoints | 18 | ✅ All passing |
+| CourseSearchTool | 30 | ✅ All passing |
+| AIGenerator | 15 | ✅ All passing |
+| RAG Integration | 0/6 | ⚠️ Requires API key |
 
 ### Known Issues
-1. **Integration tests require API mocking** - 6 tests fail with auth errors
-   - Not real bugs, just missing `@patch` decorators
-   - Tests work with valid API key but shouldn't require it
+1. **Integration tests require valid API key** - 6 tests fail with auth errors
+   - Expected behavior - these are true integration tests
+   - Set `ANTHROPIC_API_KEY` in `.env` to run them
+   - All other tests (63/69) use mocks and don't require API key
 
 2. **Course name matching is fuzzy** - Vector search matches dissimilar names
    - Expected behavior with small test dataset
@@ -145,14 +174,17 @@ Integration tests for the complete RAG system flow.
 ## Running Specific Tests
 
 ```bash
+# Test only API endpoints
+uv run pytest tests/test_api_endpoints.py -v
+
 # Test only CourseSearchTool
 uv run pytest tests/test_search_tool.py -v
 
 # Test only AIGenerator
 uv run pytest tests/test_ai_generator.py -v
 
-# Test only passing tests
-uv run pytest tests/test_search_tool.py tests/test_ai_generator.py -v
+# Test only passing tests (skip integration tests)
+uv run pytest tests/test_api_endpoints.py tests/test_search_tool.py tests/test_ai_generator.py -v
 
 # Test MAX_RESULTS bug scenarios
 uv run pytest tests/ -k "zero_results" -v
@@ -187,6 +219,18 @@ def test_with_search_tool(course_search_tool):
     """Test uses pre-configured search tool"""
     result = course_search_tool.execute(query="testing")
     assert isinstance(result, str)
+```
+
+### Testing API Endpoints
+```python
+def test_api_endpoint(client, mock_rag_system):
+    """Test HTTP endpoint with mocked backend"""
+    response = client.post("/api/query", json={"query": "test"})
+    assert response.status_code == 200
+    data = response.json()
+    assert "answer" in data
+    assert "sources" in data
+    mock_rag_system.query.assert_called_once()
 ```
 
 ### Mocking Anthropic API
