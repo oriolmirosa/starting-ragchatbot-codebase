@@ -15,7 +15,9 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nMerge ui_feature: Add frontend code quality tools and resolve conflicts\n\nCombined changes from quality_feature (dark/light theme toggle) and \nui_feature (Prettier formatting) by preserving both feature sets with \nconsistent formatting.\n\nResolved conflicts in:\n- frontend-changes.md: Combined both feature documentation\n- frontend/index.html: Added theme toggle with Prettier formatting\n- frontend/script.js: Added theme functions with Prettier formatting  \n- frontend/style.css: Added theme variables and styles with Prettier formatting\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git stash:*)",
       "Bash(git worktree:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
