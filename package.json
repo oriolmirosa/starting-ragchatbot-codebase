@@ -1,0 +1,16 @@
+{
+  "name": "rag-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "Frontend code quality tools for RAG chatbot",
+  "scripts": {
+    "format": "prettier --write \"frontend/**/*.{js,css,html}\"",
+    "format:check": "prettier --check \"frontend/**/*.{js,css,html}\"",
+    "lint:check": "npm run format:check"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.1"
+  },
+  "keywords": ["rag", "chatbot", "frontend"],
+  "author": "",
+  "license": "MIT"
+}
