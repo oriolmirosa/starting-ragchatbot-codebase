@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+backend/
+
+# Build outputs
+dist/
+build/
+
+# Database
+chroma_db/
+
+# Environment files
+.env
+.env.*
+
+# Version control
+.git/
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+*.pyc
+__pycache__/
+*.py
