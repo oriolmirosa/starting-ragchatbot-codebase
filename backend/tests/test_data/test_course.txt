@@ -1,0 +1,15 @@
+Course Title: Introduction to Testing
+Course Link: https://example.com/testing-course
+Course Instructor: Test Instructor
+
+Lesson 0: Getting Started
+Lesson Link: https://example.com/testing-course/lesson-0
+This is the introduction to testing. Testing is crucial for software quality. We will learn about unit tests, integration tests, and end-to-end tests. Testing helps catch bugs early and ensures code reliability. Good tests are fast, isolated, and deterministic.
+
+Lesson 1: Unit Testing Basics
+Lesson Link: https://example.com/testing-course/lesson-1
+Unit testing focuses on testing individual components in isolation. Each test should verify one specific behavior. Tests should be independent and not rely on external state. Mock objects help isolate the code under test. Assertions verify expected outcomes.
+
+Lesson 2: Integration Testing
+Lesson Link: https://example.com/testing-course/lesson-2
+Integration tests verify that components work together correctly. They test the interactions between modules and systems. Integration tests are slower than unit tests but provide more confidence. They often require test databases or external services. Proper setup and teardown are critical for integration tests.

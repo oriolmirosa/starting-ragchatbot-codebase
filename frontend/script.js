@@ -28,8 +28,13 @@ function setupEventListeners() {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
-    
-    
+
+    // New Chat button
+    const newChatButton = document.getElementById('newChatButton');
+    if (newChatButton) {
+        newChatButton.addEventListener('click', startNewChat);
+    }
+
     // Suggested questions
     document.querySelectorAll('.suggested-item').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -120,12 +125,23 @@ function addMessage(content, type, sources = null, isWelcome = false) {
     const displayContent = type === 'assistant' ? marked.parse(content) : escapeHtml(content);
     
     let html = `<div class="message-content">${displayContent}</div>`;
-    
+
     if (sources && sources.length > 0) {
+        // Format sources as clickable links in a list
+        const sourceItems = sources.map(source => {
+            if (source.url) {
+                // Create clickable link for sources with URLs
+                return `<div class="source-item"><a href="${source.url}" target="_blank" rel="noopener noreferrer" class="source-link">${escapeHtml(source.text)}</a></div>`;
+            } else {
+                // Plain text for sources without URLs
+                return `<div class="source-item">${escapeHtml(source.text)}</div>`;
+            }
+        }).join('');
+
         html += `
             <details class="sources-collapsible">
                 <summary class="sources-header">Sources</summary>
-                <div class="sources-content">${sources.join(', ')}</div>
+                <div class="sources-content">${sourceItems}</div>
             </details>
         `;
     }
@@ -150,6 +166,23 @@ async function createNewSession() {
     currentSessionId = null;
     chatMessages.innerHTML = '';
     addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, true);
+}
+
+function startNewChat() {
+    // Clear the current session
+    currentSessionId = null;
+
+    // Clear chat messages
+    chatMessages.innerHTML = '';
+
+    // Show welcome message
+    addMessage('Welcome to the Course Materials Assistant! I can help you with questions about courses, lessons and specific content. What would you like to know?', 'assistant', null, true);
+
+    // Clear and focus input field
+    chatInput.value = '';
+    chatInput.disabled = false;
+    sendButton.disabled = false;
+    chatInput.focus();
 }
 
 // Load course statistics

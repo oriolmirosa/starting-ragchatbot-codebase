@@ -36,6 +36,12 @@ class VectorStore:
     
     def __init__(self, chroma_path: str, embedding_model: str, max_results: int = 5):
         self.max_results = max_results
+
+        # Warn if max_results is invalid
+        if max_results <= 0:
+            print(f"WARNING: max_results={max_results} will cause all searches to return zero results!")
+            print("Please set MAX_RESULTS to a positive value in config.py")
+
         # Initialize ChromaDB client
         self.client = chromadb.PersistentClient(
             path=chroma_path,
@@ -264,4 +270,40 @@ class VectorStore:
             return None
         except Exception as e:
             print(f"Error getting lesson link: {e}")
+
+    def get_course_outline(self, course_title: str) -> Optional[Dict[str, Any]]:
+        """
+        Get complete course outline with title, link, and lessons.
+
+        Args:
+            course_title: The exact course title (can be resolved from partial name first)
+
+        Returns:
+            Dictionary with course_title, course_link, instructor, and lessons list
+            Each lesson contains lesson_number, lesson_title, lesson_link
+            Returns None if course not found
+        """
+        import json
+        try:
+            # Get course by ID (title is the ID)
+            results = self.course_catalog.get(ids=[course_title])
+            if results and 'metadatas' in results and results['metadatas']:
+                metadata = results['metadatas'][0]
+
+                # Parse lessons JSON
+                lessons = []
+                lessons_json = metadata.get('lessons_json')
+                if lessons_json:
+                    lessons = json.loads(lessons_json)
+
+                return {
+                    "course_title": metadata.get('title'),
+                    "course_link": metadata.get('course_link'),
+                    "instructor": metadata.get('instructor'),
+                    "lessons": lessons
+                }
+            return None
+        except Exception as e:
+            print(f"Error getting course outline: {e}")
+            return None
     
