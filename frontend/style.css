@@ -78,9 +78,12 @@ body {
   padding: 0;
 }
 
-/* Header - Hidden */
+/* Header */
 header {
-  display: none;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-color);
 }
 
 header h1 {
